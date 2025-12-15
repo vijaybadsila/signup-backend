@@ -14,7 +14,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://your-frontend.vercel.app"
+      "https://your-frontend.vercel.app" //api
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
