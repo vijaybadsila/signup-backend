@@ -3,7 +3,7 @@ exports.CreateData=async(req,res)=>{
 try{
 const{name,email,title,Department,Role}=req.body;
      const Response= await userdata.create({
-        name,
+        name, 
         email,
         title,
         Department,
