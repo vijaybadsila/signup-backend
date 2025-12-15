@@ -1,63 +1,38 @@
-const loginuser = require("../models/loginuser");
-const bcrypt = require("bcrypt"); // for password hashing
-const jwt = require("jsonwebtoken");
-require("dotenv").config(); // to use JWT secret from .env
-
 exports.Logindata = async (req, res) => {
+  console.log("Request body:", req.body);
+
   try {
     const { name, email, password } = req.body;
 
-    // 1️⃣ Validate required fields
     if (!name || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
+      console.log("Missing fields");
+      return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
-    // 2️⃣ Check if user already exists
     const existingUser = await loginuser.findOne({ email });
+    console.log("Existing user:", existingUser);
+
     if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "User already exists with this email",
-      });
+      return res.status(400).json({ success: false, message: "User already exists" });
     }
 
-    // 3️⃣ Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log("Hashed password done");
 
-    // 4️⃣ Create the user
-    const newUser = await loginuser.create({
-      name,
-      email,
-      password: hashedPassword,
-    });
+    const newUser = await loginuser.create({ name, email, password: hashedPassword });
+    console.log("User created:", newUser._id);
 
-    // 5️⃣ Generate JWT Token
     const token = jwt.sign(
       { id: newUser._id, email: newUser.email },
-      process.env.JWT_SECRET || "vijay@12345", // use .env or fallback
+      process.env.JWT_SECRET || "vijay@12345",
       { expiresIn: "2h" }
     );
+    console.log("JWT created:", token);
 
-    // 6️⃣ Respond to client
-    return res.status(201).json({
-      success: true,
-      message: "User created successfully",
-      token, // send JWT to frontend
-      user: {
-        id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-      },
-    });
+    return res.status(201).json({ success: true, message: "User created", token, user: newUser });
 
   } catch (err) {
-    console.error("Error creating user:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-    });
+    console.error("Controller Error:", err);
+    return res.status(500).json({ success: false, message: "Something went wrong", error: err.message });
   }
 };
