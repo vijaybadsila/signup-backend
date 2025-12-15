@@ -9,17 +9,17 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
-
 app.use(
   cors({
-    origin: [
-      "https://signup-kappa-six.vercel.app",
-      "https://signup-kappa-six.vercel.app" //api
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: "https://signup-kappa-six.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
+// 👇 REQUIRED for Vercel preflight
+app.options("*", cors());
 
 dbconnect();
 
