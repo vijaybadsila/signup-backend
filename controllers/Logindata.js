@@ -1,3 +1,7 @@
+const loginuser = require("../models/loginuser");
+const bcrypt = require("bcrypt"); // for password hashing
+const jwt = require("jsonwebtoken");
+require("dotenv").config(); // to use JWT secret from .env
 exports.Logindata = async (req, res) => {
   console.log("Request body:", req.body);
 
